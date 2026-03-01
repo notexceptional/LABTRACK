@@ -1,9 +1,8 @@
 package labtrack.inventory;
 
-import labtrack.util.FileManager;
-
 import java.util.List;
 import java.util.Scanner;
+import labtrack.util.FileManager;
 
 public class InventoryService {
     private static final String INVENTORY_FILE = "inventory.csv";
@@ -104,19 +103,20 @@ public class InventoryService {
         System.out.println("Item marked as out of inventory (quantity set to 0).");
     }
 
-    public void viewOutOfStockNecessaryItems() {
+    public void viewOutOfStockItems() {
         List<String> lines = FileManager.readAllLines(INVENTORY_FILE);
         boolean any = false;
-        System.out.println("=== Out-of-Stock Necessary Items ===");
+        System.out.println("=== Out-of-Stock Items ===");
         for (String line : lines) {
             InventoryItem item = InventoryItem.fromString(line);
-            if (item != null && item.getType().equals("necessary") && item.getQuantity() == 0) {
-                System.out.println("Name: " + item.getName());
+            if (item != null && item.getQuantity() == 0) {
+                String tag = item.getType().equals("necessary") ? " (necessary)" : "";
+                System.out.println("Name: " + item.getName() + tag);
                 any = true;
             }
         }
         if (!any) {
-            System.out.println("No necessary items are out of stock.");
+            System.out.println("No items are out of stock.");
         }
     }
 

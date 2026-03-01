@@ -1,9 +1,9 @@
 package labtrack.users;
 
-import labtrack.booking.BookingService;
-import labtrack.reports.ReportService;
-
 import java.util.Scanner;
+import labtrack.booking.BookingService;
+import labtrack.inventory.ItemService;
+import labtrack.reports.ReportService;
 
 public class LabManager extends User {
     public LabManager(String id, String name) {
@@ -12,13 +12,18 @@ public class LabManager extends User {
 
     @Override
     public void showMenu() {
-        System.out.println("1. Approve Reservation\n2. View Reports\n0. Logout");
+        System.out.println("---LABMANAGER MENU---");
+        System.out.println("1. Approve Reservation");
+        System.out.println("2. Report");
+        System.out.println("3. View Item Requests");
+        System.out.println("4. Approve Item Request");
     }
 
     @Override
     public void handleChoice(int choice, Scanner sc) {
         BookingService bookingService = new BookingService();
         ReportService reportService = new ReportService();
+        ItemService itemService = new ItemService();
 
         if (choice == 1) {
             bookingService.listPending();
@@ -29,6 +34,13 @@ public class LabManager extends User {
             reportService.printSummaryReport();
             return;
         }
-        System.out.println("Invalid choice");
+        if (choice == 3) {
+            itemService.viewAllRequests();
+            return;
+        }
+        if (choice == 4) {
+            itemService.approveRequest(sc);
+            return;
+        }
     }
 }

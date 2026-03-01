@@ -37,6 +37,12 @@ public class BookingService {
             return;
         }
 
+        System.out.print("Approve (Y/N): ");
+        String confirm = sc.nextLine().trim();
+        if (!confirm.equalsIgnoreCase("Y")) {
+            return;
+        }
+
         System.out.print("Enter Booking ID to approve: ");
         String targetId = sc.nextLine().trim();
         if (targetId.isEmpty()) {

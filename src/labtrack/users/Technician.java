@@ -1,8 +1,8 @@
 package labtrack.users;
 
-import labtrack.inventory.InventoryService;
-
 import java.util.Scanner;
+import labtrack.inventory.InventoryService;
+import labtrack.inventory.ItemService;
 
 public class Technician extends User {
     public Technician(String id, String name) {
@@ -11,35 +11,50 @@ public class Technician extends User {
 
     @Override
     public void showMenu() {
+        System.out.println("---TECHNICIAN MENU---");
+        System.out.println("--- Inventory ---");
         System.out.println("1. Add Inventory Item");
         System.out.println("2. Update Inventory Item Quantity");
         System.out.println("3. Mark Item as Out of Inventory");
-        System.out.println("4. View Out-of-Stock Necessary Items");
+        System.out.println("4. View Out-of-Stock Items");
         System.out.println("5. View Inventory");
-        System.out.println("0. Logout");
+        System.out.println("--- Borrow Requests ---");
+        System.out.println("6. View Borrow Requests");
+        System.out.println("7. Approve Borrow Request");
+        System.out.println("8. View Borrowed Items");
     }
 
     @Override
     public void handleChoice(int choice, Scanner sc) {
-        InventoryService service = new InventoryService();
+        InventoryService invService = new InventoryService();
+        ItemService itemService = new ItemService();
         switch (choice) {
             case 1:
-                service.addItemWithType(sc);
+                invService.addItemWithType(sc);
                 break;
             case 2:
-                service.updateItemQuantity(sc);
+                invService.updateItemQuantity(sc);
                 break;
             case 3:
-                service.markItemOut(sc);
+                invService.markItemOut(sc);
                 break;
             case 4:
-                service.viewOutOfStockNecessaryItems();
+                invService.viewOutOfStockItems();
                 break;
             case 5:
-                service.viewInventory();
+                invService.viewInventory();
+                break;
+            case 6:
+                itemService.viewBorrowRequests();
+                break;
+            case 7:
+                itemService.approveBorrowRequest(sc);
+                break;
+            case 8:
+                itemService.viewBorrowedItems();
                 break;
             default:
-                System.out.println("Invalid choice");
+                break;
         }
     }
 }

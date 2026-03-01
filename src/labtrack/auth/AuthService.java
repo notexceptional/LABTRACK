@@ -1,10 +1,22 @@
 package labtrack.auth;
+import java.io.Console;
 import java.util.*;
 import labtrack.users.*;
 import labtrack.util.FileManager;
 
 public class AuthService {
     private static final String PASSWORD = "123456";
+
+    private String readPassword(Scanner sc, String prompt) {
+        Console console = System.console();
+        if (console != null) {
+            char[] passChars = console.readPassword(prompt);
+            return passChars != null ? new String(passChars) : "";
+        } else {
+            System.out.print(prompt);
+            return sc.next();
+        }
+    }
 
     public User login() {
         Scanner sc = new Scanner(System.in);
@@ -22,7 +34,7 @@ public class AuthService {
                 System.out.println("Only admin can login .");
                 return null;
             }
-            String pass = readPasswordMasked(sc, "Enter password: ");
+            String pass = readPassword(sc, "Enter password: ");
             if (!pass.equals(PASSWORD)) {
                 System.out.println("Wrong password! Access denied.");
                 return null;
@@ -35,7 +47,7 @@ public class AuthService {
         String username = sc.next();
         System.out.print("Enter role: ");
         String role = sc.next();
-        String pass = readPasswordMasked(sc, "Enter password: ");
+        String pass = readPassword(sc, "Enter password: ");
 
         if (role.equalsIgnoreCase("admin")) {
             if (!pass.equals(PASSWORD)) {
@@ -63,12 +75,5 @@ public class AuthService {
         }
         System.out.println("User not found or credentials incorrect.");
         return null;
-    }
-
-    private static String readPasswordMasked(Scanner sc, String prompt) {
-        System.out.print(prompt);
-        String pass = sc.next();
-        System.out.print("\033[1A\r" + prompt + "*".repeat(pass.length()) + "\n");
-        return pass;
     }
 }

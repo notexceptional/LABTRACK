@@ -18,8 +18,8 @@ public class Main {
             while (loggedIn) {
                 System.out.println("");
                 user.showMenu();
-                System.out.println("4. Logout");
-                System.out.println("5. Exit");
+                System.out.println("000. Logout");
+                System.out.println("999. Exit");
                 System.out.println("");
                 int choice;
                 try {
@@ -37,10 +37,10 @@ public class Main {
                 if (sc.hasNextLine()) {
                     sc.nextLine();
                 }
-                if (choice == 4) {
+                if (choice == 000) {
                     loggedIn = false;
-                } else if (choice == 5) {
-                    System.out.println("Exiting NOW.Thank you for using Labtrack!");
+                } else if (choice == 999) {
+                    System.out.println("Exiting NOW.Thank you for using LABTRACK!");
                     sc.close();
                     System.exit(0);
                 } else {
