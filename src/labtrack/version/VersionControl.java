@@ -17,7 +17,7 @@ public class VersionControl {
         this.changeLog = changeLog;
     }
 
-    // Constructor for loading from file
+    
     public VersionControl(String versionID, String modifiedBy, String dataSnapshot, String changeLog, Date timestamp) {
         this.versionID = versionID;
         this.dataSnapshot = dataSnapshot;
