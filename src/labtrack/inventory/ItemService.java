@@ -3,7 +3,6 @@ package labtrack.inventory;
 import java.util.List;
 import java.util.Scanner;
 import labtrack.util.FileManager;
-import labtrack.util.InputHelper;
 
 public class ItemService {
     private static final String INVENTORY_FILE = "inventory.csv";
@@ -42,11 +41,13 @@ public class ItemService {
             return;
         }
 
-        String itemName = InputHelper.readLine("Enter item name to borrow: ");
+        System.out.print("Enter item name to borrow: ");
+        String itemName = sc.nextLine().trim();
 
+        System.out.print("Enter quantity to borrow: ");
         int borrowQty;
         try {
-            borrowQty = Integer.parseInt(InputHelper.readLine("Enter quantity to borrow: "));
+            borrowQty = Integer.parseInt(sc.nextLine().trim());
         } catch (NumberFormatException e) {
             System.out.println("Invalid quantity.");
             return;
@@ -113,13 +114,16 @@ public class ItemService {
 
         viewBorrowRequests();
 
-        String confirm = InputHelper.readLine("Approve request? (Y/N): ");
+        System.out.print("Approve request? (Y/N): ");
+        String confirm = sc.nextLine().trim();
         if (!confirm.equalsIgnoreCase("Y")) {
             return;
         }
 
-        String requesterName = InputHelper.readLine("Enter requester name: ");
-        String itemName = InputHelper.readLine("Enter item name: ");
+        System.out.print("Enter requester name: ");
+        String requesterName = sc.nextLine().trim();
+        System.out.print("Enter item name: ");
+        String itemName = sc.nextLine().trim();
 
         boolean found = false;
         int approvedQty = 0;
@@ -153,7 +157,8 @@ public class ItemService {
             }
         }
 
-        String returnDate = InputHelper.readLine("Enter return date (yyyy-MM-dd): ");
+        System.out.print("Enter return date (yyyy-MM-dd): ");
+        String returnDate = sc.nextLine().trim();
         if (returnDate.isEmpty()) {
             System.out.println("Return date cannot be empty.");
             return;
@@ -188,7 +193,8 @@ public class ItemService {
     }
 
     public void requestNewItem(Scanner sc, String requesterName) {
-        String itemName = InputHelper.readLine("Enter item name to request: ");
+        System.out.print("Enter item name to request: ");
+        String itemName = sc.nextLine().trim();
 
         if (itemName.isEmpty()) {
             System.out.println("Item name cannot be empty.");
@@ -204,15 +210,17 @@ public class ItemService {
             }
         }
 
+        System.out.print("Enter quantity needed: ");
         int qty;
         try {
-            qty = Integer.parseInt(InputHelper.readLine("Enter quantity needed: "));
+            qty = Integer.parseInt(sc.nextLine().trim());
         } catch (NumberFormatException e) {
             System.out.println("Invalid quantity.");
             return;
         }
 
-        String reason = InputHelper.readLine("Enter reason for request: ");
+        System.out.print("Enter reason for request: ");
+        String reason = sc.nextLine().trim();
 
         String request = requesterName + "|" + itemName + "|" + qty + "|" + reason + "|pending|" + System.currentTimeMillis();
         FileManager.write(REQUESTS_FILE, request);
@@ -249,12 +257,14 @@ public class ItemService {
 
         viewAllRequests();
 
-        String confirm = InputHelper.readLine("Approve request? (Y/N): ");
+        System.out.print("Approve request? (Y/N): ");
+        String confirm = sc.nextLine().trim();
         if (!confirm.equalsIgnoreCase("Y")) {
             return;
         }
 
-        String itemName = InputHelper.readLine("Enter item name to approve: ");
+        System.out.print("Enter item name to approve: ");
+        String itemName = sc.nextLine().trim();
 
         boolean found = false;
         for (int i = 0; i < lines.size(); i++) {
