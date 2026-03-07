@@ -15,11 +15,16 @@ public class ReportService {
         int pendingBookings = countLines(PENDING_BOOKINGS_FILE);
         int approvedBookings = countLines(APPROVED_BOOKINGS_FILE);
 
-        System.out.println("=== Reports ===");
-        System.out.println("Experiments (saved): " + experiments);
-        System.out.println("Inventory items (saved): " + inventoryItems);
-        System.out.println("Bookings pending: " + pendingBookings);
-        System.out.println("Bookings approved: " + approvedBookings);
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|              SYSTEM REPORT                   |");
+        System.out.println("+----------------------------------------------+");
+        System.out.println("+------------------------------------------+");
+        System.out.println("| Experiments Saved:    " + experiments);
+        System.out.println("| Inventory Items:      " + inventoryItems);
+        System.out.println("| Bookings Pending:     " + pendingBookings);
+        System.out.println("| Bookings Approved:    " + approvedBookings);
+        System.out.println("+------------------------------------------+");
     }
 
     private int countLines(String file) {

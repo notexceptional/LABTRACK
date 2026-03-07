@@ -2,44 +2,43 @@ package labtrack.labroom;
 
 public class LabRoom {
     private String roomID;
-    private int capacity;
+    private String bookingID;
+    private String bookedBy;
+    private String dateBooked;
 
-    public LabRoom(String roomID, int capacity) {
+    public LabRoom(String roomID, String bookingID, String bookedBy, String dateBooked) {
         this.roomID = roomID;
-        this.capacity = capacity;
+        this.bookingID = bookingID;
+        this.bookedBy = bookedBy;
+        this.dateBooked = dateBooked;
     }
 
     public String getRoomID() {
         return roomID;
     }
 
-    public int getCapacity() {
-        return capacity;
+    public String getBookingID() {
+        return bookingID;
     }
 
-    public void updateCapacity(int capacity) {
-        this.capacity = capacity;
+    public String getBookedBy() {
+        return bookedBy;
     }
 
-    public boolean canAccommodate(int peopleCount) {
-        return peopleCount <= capacity;
+    public String getDateBooked() {
+        return dateBooked;
     }
+
     @Override
     public String toString() {
-        return safe(roomID) + "," + capacity;
+        return safe(roomID) + "," + safe(bookingID) + "," + safe(bookedBy) + "," + safe(dateBooked);
     }
 
     public static LabRoom fromString(String line) {
         if (line == null) return null;
-        String[] parts = line.split(",", 2);
-        if (parts.length != 2) return null;
-        int cap;
-        try {
-            cap = Integer.parseInt(parts[1].trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return new LabRoom(parts[0], cap);
+        String[] parts = line.split(",", 4);
+        if (parts.length != 4) return null;
+        return new LabRoom(parts[0], parts[1], parts[2], parts[3]);
     }
 
     private static String safe(String s) {

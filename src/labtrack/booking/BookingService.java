@@ -3,50 +3,54 @@ package labtrack.booking;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import labtrack.labroom.LabRoom;
 import labtrack.util.FileManager;
+import labtrack.util.InputHelper;
 
 public class BookingService {
     private static final String PENDING_FILE = "bookings_pending.csv";
     private static final String APPROVED_FILE = "bookings_approved.csv";
+    private static final String LAB_ROOMS_FILE = "lab_rooms.csv";
 
     public void listPending() {
         List<String> lines = FileManager.readAllLines(PENDING_FILE);
         if (lines.isEmpty()) {
-            System.out.println("No pending reservations.");
+            System.out.println("  [!] No pending reservations.");
             return;
         }
 
-        System.out.println("=== Pending Reservations ===");
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|           PENDING RESERVATIONS               |");
+        System.out.println("+----------------------------------------------+");
         for (String line : lines) {
             Booking b = Booking.fromString(line);
             if (b == null) continue;
 
-            System.out.println("Booking ID: " + b.getBookingID());
-            System.out.println("Room: " + b.getRoomID());
-            System.out.println("Date: " + b.getDateString());
-            System.out.println("Time: " + b.getStartTimeString() + " - " + b.getEndTimeString());
-            System.out.println("--------------------");
+            System.out.println("+------------------------------------------+");
+            System.out.println("| Booking ID:  " + b.getBookingID());
+            System.out.println("| Room:        " + b.getRoomID());
+            System.out.println("| Date:        " + b.getDateString());
+            System.out.println("| Time:        " + b.getStartTimeString() + " - " + b.getEndTimeString());
+            System.out.println("| Booked By:   " + b.getBookedBy());
+            System.out.println("+------------------------------------------+");
         }
     }
     public void approveById(Scanner sc) {
-        sc.nextLine();
-
         List<String> lines = FileManager.readAllLines(PENDING_FILE);
         if (lines.isEmpty()) {
-            System.out.println("No pending reservations.");
+            System.out.println("  [!] No pending reservations.");
             return;
         }
 
-        System.out.print("Approve (Y/N): ");
-        String confirm = sc.nextLine().trim();
+        String confirm = InputHelper.readLine("Approve (Y/N): ");
         if (!confirm.equalsIgnoreCase("Y")) {
             return;
         }
 
-        System.out.print("Enter Booking ID to approve: ");
-        String targetId = sc.nextLine().trim();
+        String targetId = InputHelper.readLine("Enter Booking ID to approve: ");
         if (targetId.isEmpty()) {
-            System.out.println("Invalid booking ID.");
+            System.out.println("  [ERROR] Invalid booking ID.");
             return;
         }
 
@@ -68,13 +72,31 @@ public class BookingService {
         }
 
         if (approvedLine == null) {
-            System.out.println("Booking ID not found in pending list.");
+            System.out.println("  [ERROR] Booking ID not found in pending list.");
             return;
         }
 
         FileManager.overwrite(PENDING_FILE, kept);
         FileManager.write(APPROVED_FILE, approvedLine);
-        System.out.println("Reservation approved.");
+
+        // Create LabRoom from the approved booking
+        Booking approved = Booking.fromString(approvedLine);
+        if (approved != null) {
+            LabRoom labRoom = new LabRoom(
+                approved.getRoomID(),
+                approved.getBookingID(),
+                approved.getBookedBy(),
+                approved.getDateString()
+            );
+            FileManager.write(LAB_ROOMS_FILE, labRoom.toString());
+            System.out.println();
+            System.out.println("  *****************************************");
+            System.out.println("  *   Lab Room " + approved.getRoomID() + " is RESERVED!   *");
+            System.out.println("  *****************************************");
+        }
+        System.out.println();
+        System.out.println("  >>> Reservation approved successfully! <<<");
+        System.out.println();
     }
 
     public int countPending() {
@@ -85,25 +107,46 @@ public class BookingService {
         return FileManager.readAllLines(APPROVED_FILE).size();
     }
 
-    public void makeReservation(Scanner sc) {
-        System.out.print("Enter Booking ID: ");
-        String bookingID = sc.nextLine().trim();
-        System.out.print("Enter Date (yyyy-MM-dd): ");
-        String date = sc.nextLine().trim();
-        System.out.print("Enter Start Time (HH:mm): ");
-        String startTime = sc.nextLine().trim();
-        System.out.print("Enter End Time (HH:mm): ");
-        String endTime = sc.nextLine().trim();
-        System.out.print("Enter Room ID: ");
-        String roomID = sc.nextLine().trim();
+    public void makeReservation(Scanner sc, String username) {
+        String bookingID = InputHelper.readLine("Enter Booking ID(use last 3 digits from your userID): ");
+        String date = InputHelper.readLine("Enter Date (yyyy-MM-dd): ");
+        String startTime = InputHelper.readLine("Enter Start Time (HH:mm): ");
+        String endTime = InputHelper.readLine("Enter End Time (HH:mm): ");
+        String roomID = InputHelper.readLine("Enter Room ID: ");
 
         if (bookingID.isEmpty() || date.isEmpty() || startTime.isEmpty() || endTime.isEmpty() || roomID.isEmpty()) {
-            System.out.println("All fields are required. Reservation not created.");
+            System.out.println("  [ERROR] All fields are required. Reservation not created.");
             return;
         }
 
-        Booking booking = new Booking(bookingID, date, startTime, endTime, roomID);
+        Booking booking = new Booking(bookingID, date, startTime, endTime, roomID, username);
         FileManager.write(PENDING_FILE, booking.toString());
-        System.out.println("Reservation submitted for approval.");
+        System.out.println();
+        System.out.println("  >>> Reservation submitted for approval! <<<");
+        System.out.println();
+    }
+
+    public void viewBookedRooms() {
+        List<String> lines = FileManager.readAllLines(LAB_ROOMS_FILE);
+        if (lines.isEmpty()) {
+            System.out.println("  [!] No booked rooms.");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|             BOOKED LAB ROOMS                 |");
+        System.out.println("+----------------------------------------------+");
+        for (String line : lines) {
+            LabRoom room = LabRoom.fromString(line);
+            if (room == null) continue;
+
+            System.out.println("+------------------------------------------+");
+            System.out.println("| Room ID:     " + room.getRoomID());
+            System.out.println("| Booking ID:  " + room.getBookingID());
+            System.out.println("| Booked By:   " + room.getBookedBy());
+            System.out.println("| Date:        " + room.getDateBooked());
+            System.out.println("+------------------------------------------+");
+        }
     }
 }

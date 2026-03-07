@@ -12,11 +12,19 @@ public class LabManager extends User {
 
     @Override
     public void showMenu() {
-        System.out.println("---LABMANAGER MENU---");
-        System.out.println("1. Approve Reservation");
-        System.out.println("2. Report");
-        System.out.println("3. View Item Requests");
-        System.out.println("4. Approve Item Request");
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|            LAB MANAGER PANEL                 |");
+        System.out.println("+----------------------------------------------+");
+        System.out.println();
+        System.out.println("  ~~~ Reservations ~~~");
+        System.out.println("  [1] Approve Reservation");
+        System.out.println();
+        System.out.println("  ~~~ Reports ~~~");
+        System.out.println("  [2] Generate Report");
+        System.out.println();
+        System.out.println("  ~~~ Item Requests ~~~");
+        System.out.println("  [3] View Item Requests");
+        System.out.println("  [4] Approve Item Request");
     }
 
     @Override

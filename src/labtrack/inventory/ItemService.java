@@ -3,6 +3,7 @@ package labtrack.inventory;
 import java.util.List;
 import java.util.Scanner;
 import labtrack.util.FileManager;
+import labtrack.util.InputHelper;
 
 public class ItemService {
     private static final String INVENTORY_FILE = "inventory.csv";
@@ -14,22 +15,25 @@ public class ItemService {
         List<String> lines = FileManager.readAllLines(INVENTORY_FILE);
 
         if (lines.isEmpty()) {
-            System.out.println("No inventory items found.");
+            System.out.println("  [!] No inventory items found.");
             return;
         }
 
-        System.out.println("=== Available Inventory Items ===");
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|              AVAILABLE ITEMS                 |");
+        System.out.println("+----------------------------------------------+");
         boolean any = false;
         for (String line : lines) {
             InventoryItem item = InventoryItem.fromString(line);
             if (item == null) continue;
             String status = item.getQuantity() > 0 ? "In Stock (" + item.getQuantity() + ")" : "Out of Stock";
-            String tag = item.getType().equals("necessary") ? " [necessary]" : "";
-            System.out.println("- " + item.getName() + tag + " : " + status);
+            String tag = item.getType().equals("necessary") ? " [NECESSARY]" : "";
+            System.out.println("  " + item.getName() + tag + " : " + status);
             any = true;
         }
         if (!any) {
-            System.out.println("No items available.");
+            System.out.println("  [!] No items available.");
         }
     }
 
@@ -37,24 +41,22 @@ public class ItemService {
         List<String> lines = FileManager.readAllLines(INVENTORY_FILE);
 
         if (lines.isEmpty()) {
-            System.out.println("No inventory items found.");
+            System.out.println("  [!] No inventory items found.");
             return;
         }
 
-        System.out.print("Enter item name to borrow: ");
-        String itemName = sc.nextLine().trim();
+        String itemName = InputHelper.readLine("Enter item name to borrow: ");
 
-        System.out.print("Enter quantity to borrow: ");
         int borrowQty;
         try {
-            borrowQty = Integer.parseInt(sc.nextLine().trim());
+            borrowQty = Integer.parseInt(InputHelper.readLine("Enter quantity to borrow: "));
         } catch (NumberFormatException e) {
-            System.out.println("Invalid quantity.");
+            System.out.println("  [ERROR] Invalid quantity.");
             return;
         }
 
         if (borrowQty <= 0) {
-            System.out.println("Quantity must be greater than 0.");
+            System.out.println("  [ERROR] Quantity must be greater than 0.");
             return;
         }
 
@@ -64,11 +66,11 @@ public class ItemService {
             if (item != null && item.getName().equalsIgnoreCase(itemName)) {
                 found = true;
                 if (item.getQuantity() == 0) {
-                    System.out.println("Item is out of stock.");
+                    System.out.println("  [ERROR] Item is out of stock.");
                     return;
                 }
                 if (item.getQuantity() < borrowQty) {
-                    System.out.println("Not enough stock. Available: " + item.getQuantity());
+                    System.out.println("  [ERROR] Not enough stock. Available: " + item.getQuantity());
                     return;
                 }
                 break;
@@ -76,31 +78,37 @@ public class ItemService {
         }
 
         if (!found) {
-            System.out.println("Item not found in inventory.");
+            System.out.println("  [ERROR] Item not found in inventory.");
             return;
         }
 
         String borrowRequest = borrowerName + "|" + itemName + "|" + borrowQty + "|pending|" + System.currentTimeMillis();
         FileManager.write(BORROW_REQUESTS_FILE, borrowRequest);
-        System.out.println("Borrow request submitted. Waiting for technician approval.");
+        System.out.println();
+        System.out.println("  >>> Borrow request submitted. Waiting for technician approval. <<<");
+        System.out.println();
     }
 
     public void viewBorrowRequests() {
         List<String> lines = FileManager.readAllLines(BORROW_REQUESTS_FILE);
 
         if (lines.isEmpty()) {
-            System.out.println("No borrow requests found.");
+            System.out.println("  [!] No borrow requests found.");
             return;
         }
 
-        System.out.println("=== Borrow Requests ===");
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|              BORROW REQUESTS                 |");
+        System.out.println("+----------------------------------------------+");
         for (String line : lines) {
             String[] parts = line.split("\\|", 5);
             if (parts.length < 4) continue;
-            System.out.println("Requester: " + parts[0]);
-            System.out.println("Item: " + parts[1] + " (Qty: " + parts[2] + ")");
-            System.out.println("Status: " + parts[3]);
-            System.out.println("--------------------");
+            System.out.println("+------------------------------------------+");
+            System.out.println("| Requester:  " + parts[0]);
+            System.out.println("| Item:       " + parts[1] + " (Qty: " + parts[2] + ")");
+            System.out.println("| Status:     " + parts[3]);
+            System.out.println("+------------------------------------------+");
         }
     }
 
@@ -108,22 +116,19 @@ public class ItemService {
         List<String> lines = FileManager.readAllLines(BORROW_REQUESTS_FILE);
 
         if (lines.isEmpty()) {
-            System.out.println("No borrow requests found.");
+            System.out.println("  [!] No borrow requests found.");
             return;
         }
 
         viewBorrowRequests();
 
-        System.out.print("Approve request? (Y/N): ");
-        String confirm = sc.nextLine().trim();
+        String confirm = InputHelper.readLine("Approve request? (Y/N): ");
         if (!confirm.equalsIgnoreCase("Y")) {
             return;
         }
 
-        System.out.print("Enter requester name: ");
-        String requesterName = sc.nextLine().trim();
-        System.out.print("Enter item name: ");
-        String itemName = sc.nextLine().trim();
+        String requesterName = InputHelper.readLine("Enter requester name: ");
+        String itemName = InputHelper.readLine("Enter item name: ");
 
         boolean found = false;
         int approvedQty = 0;
@@ -139,7 +144,7 @@ public class ItemService {
         }
 
         if (!found) {
-            System.out.println("Pending request not found.");
+            System.out.println("  [ERROR] Pending request not found.");
             return;
         }
 
@@ -148,7 +153,7 @@ public class ItemService {
             InventoryItem item = InventoryItem.fromString(invLines.get(i));
             if (item != null && item.getName().equalsIgnoreCase(itemName)) {
                 if (item.getQuantity() < approvedQty) {
-                    System.out.println("Not enough stock to approve. Available: " + item.getQuantity());
+                    System.out.println("  [ERROR] Not enough stock to approve. Available: " + item.getQuantity());
                     return;
                 }
                 item.updateQuantity(item.getQuantity() - approvedQty);
@@ -157,10 +162,9 @@ public class ItemService {
             }
         }
 
-        System.out.print("Enter return date (yyyy-MM-dd): ");
-        String returnDate = sc.nextLine().trim();
+        String returnDate = InputHelper.readLine("Enter return date (yyyy-MM-dd): ");
         if (returnDate.isEmpty()) {
-            System.out.println("Return date cannot be empty.");
+            System.out.println("  [ERROR] Return date cannot be empty.");
             return;
         }
 
@@ -170,34 +174,39 @@ public class ItemService {
         String borrowRecord = requesterName + "|" + itemName + "|" + approvedQty + "|" + returnDate + "|" + System.currentTimeMillis();
         FileManager.write(BORROWED_ITEMS_FILE, borrowRecord);
 
-        System.out.println("Borrow request approved. Return date: " + returnDate);
+        System.out.println();
+        System.out.println("  >>> Borrow request approved! Return date: " + returnDate + " <<<");
+        System.out.println();
     }
 
     public void viewBorrowedItems() {
         List<String> lines = FileManager.readAllLines(BORROWED_ITEMS_FILE);
 
         if (lines.isEmpty()) {
-            System.out.println("No borrowed items found.");
+            System.out.println("  [!] No borrowed items found.");
             return;
         }
 
-        System.out.println("=== Borrowed Items ===");
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|              BORROWED ITEMS                  |");
+        System.out.println("+----------------------------------------------+");
         for (String line : lines) {
             String[] parts = line.split("\\|", 5);
             if (parts.length < 4) continue;
-            System.out.println("Borrower: " + parts[0]);
-            System.out.println("Item: " + parts[1] + " (Qty: " + parts[2] + ")");
-            System.out.println("Return Date: " + parts[3]);
-            System.out.println("--------------------");
+            System.out.println("+------------------------------------------+");
+            System.out.println("| Borrower:    " + parts[0]);
+            System.out.println("| Item:        " + parts[1] + " (Qty: " + parts[2] + ")");
+            System.out.println("| Return Date: " + parts[3]);
+            System.out.println("+------------------------------------------+");
         }
     }
 
     public void requestNewItem(Scanner sc, String requesterName) {
-        System.out.print("Enter item name to request: ");
-        String itemName = sc.nextLine().trim();
+        String itemName = InputHelper.readLine("Enter item name to request: ");
 
         if (itemName.isEmpty()) {
-            System.out.println("Item name cannot be empty.");
+            System.out.println("  [ERROR] Item name cannot be empty.");
             return;
         }
 
@@ -205,45 +214,49 @@ public class ItemService {
         for (String line : invLines) {
             InventoryItem item = InventoryItem.fromString(line);
             if (item != null && item.getName().equalsIgnoreCase(itemName)) {
-                System.out.println("Item already exists in inventory. Use borrow instead.");
+                System.out.println("  [!] Item already exists in inventory. Use borrow instead.");
                 return;
             }
         }
 
-        System.out.print("Enter quantity needed: ");
         int qty;
         try {
-            qty = Integer.parseInt(sc.nextLine().trim());
+            qty = Integer.parseInt(InputHelper.readLine("Enter quantity needed: "));
         } catch (NumberFormatException e) {
-            System.out.println("Invalid quantity.");
+            System.out.println("  [ERROR] Invalid quantity.");
             return;
         }
 
-        System.out.print("Enter reason for request: ");
-        String reason = sc.nextLine().trim();
+        String reason = InputHelper.readLine("Enter reason for request: ");
 
         String request = requesterName + "|" + itemName + "|" + qty + "|" + reason + "|pending|" + System.currentTimeMillis();
         FileManager.write(REQUESTS_FILE, request);
-        System.out.println("Item request submitted successfully.");
+        System.out.println();
+        System.out.println("  >>> Item request submitted successfully! <<<");
+        System.out.println();
     }
 
     public void viewAllRequests() {
         List<String> lines = FileManager.readAllLines(REQUESTS_FILE);
 
         if (lines.isEmpty()) {
-            System.out.println("No item requests found.");
+            System.out.println("  [!] No item requests found.");
             return;
         }
 
-        System.out.println("=== All Item Requests ===");
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|               ITEM REQUESTS                  |");
+        System.out.println("+----------------------------------------------+");
         for (String line : lines) {
             String[] parts = line.split("\\|", 6);
             if (parts.length < 5) continue;
-            System.out.println("Requester: " + parts[0]);
-            System.out.println("Item: " + parts[1] + " (Qty: " + parts[2] + ")");
-            System.out.println("Reason: " + parts[3]);
-            System.out.println("Status: " + parts[4]);
-            System.out.println("--------------------");
+            System.out.println("+------------------------------------------+");
+            System.out.println("| Requester:  " + parts[0]);
+            System.out.println("| Item:       " + parts[1] + " (Qty: " + parts[2] + ")");
+            System.out.println("| Reason:     " + parts[3]);
+            System.out.println("| Status:     " + parts[4]);
+            System.out.println("+------------------------------------------+");
         }
     }
 
@@ -251,20 +264,18 @@ public class ItemService {
         List<String> lines = FileManager.readAllLines(REQUESTS_FILE);
 
         if (lines.isEmpty()) {
-            System.out.println("No item requests found.");
+            System.out.println("  [!] No item requests found.");
             return;
         }
 
         viewAllRequests();
 
-        System.out.print("Approve request? (Y/N): ");
-        String confirm = sc.nextLine().trim();
+        String confirm = InputHelper.readLine("Approve request? (Y/N): ");
         if (!confirm.equalsIgnoreCase("Y")) {
             return;
         }
 
-        System.out.print("Enter item name to approve: ");
-        String itemName = sc.nextLine().trim();
+        String itemName = InputHelper.readLine("Enter item name to approve: ");
 
         boolean found = false;
         for (int i = 0; i < lines.size(); i++) {
@@ -278,11 +289,13 @@ public class ItemService {
         }
 
         if (!found) {
-            System.out.println("Pending request not found for this item.");
+            System.out.println("  [ERROR] Pending request not found for this item.");
             return;
         }
 
         FileManager.overwrite(REQUESTS_FILE, lines);
-        System.out.println("Request approved.");
+        System.out.println();
+        System.out.println("  >>> Request approved! <<<");
+        System.out.println();
     }
 }

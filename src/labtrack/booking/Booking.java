@@ -10,13 +10,15 @@ public class Booking {
     private String startTime;
     private String endTime;
     private String roomID;
+    private String bookedBy;
 
-    public Booking(String bookingID, String date, String startTime, String endTime, String roomID) {
+    public Booking(String bookingID, String date, String startTime, String endTime, String roomID, String bookedBy) {
         this.bookingID = bookingID;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.roomID = roomID;
+        this.bookedBy = bookedBy;
     }
 
     public String getBookingID() {
@@ -38,6 +40,11 @@ public class Booking {
     public String getRoomID() {
         return roomID;
     }
+
+    public String getBookedBy() {
+        return bookedBy;
+    }
+
     public LocalDate getDate() {
         if (date == null || date.trim().isEmpty()) return null;
         try {
@@ -77,14 +84,14 @@ public class Booking {
     }
     @Override
     public String toString() {
-        return safe(bookingID) + "," + safe(date) + "," + safe(startTime) + "," + safe(endTime) + "," + safe(roomID);
+        return safe(bookingID) + "," + safe(date) + "," + safe(startTime) + "," + safe(endTime) + "," + safe(roomID) + "," + safe(bookedBy);
     }
 
     public static Booking fromString(String line) {
         if (line == null) return null;
-        String[] parts = line.split(",", 5);
-        if (parts.length != 5) return null;
-        return new Booking(parts[0], parts[1], parts[2], parts[3], parts[4]);
+        String[] parts = line.split(",", 6);
+        if (parts.length != 6) return null;
+        return new Booking(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
     }
 
     private static LocalTime parseTime(String value) {

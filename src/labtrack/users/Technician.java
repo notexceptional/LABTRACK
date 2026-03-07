@@ -11,17 +11,21 @@ public class Technician extends User {
 
     @Override
     public void showMenu() {
-        System.out.println("---TECHNICIAN MENU---");
-        System.out.println("--- Inventory ---");
-        System.out.println("1. Add Inventory Item");
-        System.out.println("2. Update Inventory Item Quantity");
-        System.out.println("3. Mark Item as Out of Inventory");
-        System.out.println("4. View Out-of-Stock Items");
-        System.out.println("5. View Inventory");
-        System.out.println("--- Borrow Requests ---");
-        System.out.println("6. View Borrow Requests");
-        System.out.println("7. Approve Borrow Request");
-        System.out.println("8. View Borrowed Items");
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|           TECHNICIAN DASHBOARD               |");
+        System.out.println("+----------------------------------------------+");
+        System.out.println();
+        System.out.println("  ~~~ Inventory ~~~");
+        System.out.println("  [1] Add Inventory Item");
+        System.out.println("  [2] Update Item Quantity");
+        System.out.println("  [3] Mark Item Out of Stock");
+        System.out.println("  [4] View Out-of-Stock Items");
+        System.out.println("  [5] View Inventory");
+        System.out.println();
+        System.out.println("  ~~~ Borrow Requests ~~~");
+        System.out.println("  [6] View Borrow Requests");
+        System.out.println("  [7] Approve Borrow Request");
+        System.out.println("  [8] View Borrowed Items");
     }
 
     @Override

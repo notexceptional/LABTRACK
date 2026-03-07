@@ -4,67 +4,68 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import labtrack.util.FileManager;
+import labtrack.util.InputHelper;
 import labtrack.version.VersionControl;
 
 public class ExperimentService {
     private static final String VERSIONS_FILE = "experiment_versions.csv";
 
     public void addExperiment(Scanner sc) {
-        System.out.print("Enter Experiment ID: ");
-        String id = sc.nextLine().trim();
+        String id = InputHelper.readLine("Enter Experiment ID: ");
 
         List<String> existing = FileManager.readAllLines("experiments.csv");
         for (String line : existing) {
             String[] p = line.split(",", 3);
             if (p.length >= 1 && p[0].trim().equals(id)) {
-                System.out.println("Experiment ID already exists. Experiment not created.");
+                System.out.println("  [ERROR] Experiment ID already exists. Experiment not created.");
                 return;
             }
         }
 
-        System.out.print("Enter Experiment Title: ");
-        String title = sc.nextLine();
-
-        System.out.print("Enter Description: ");
-        String desc = sc.nextLine();
+        String title = InputHelper.readLine("Enter Experiment Title: ");
+        String desc = InputHelper.readLine("Enter Description: ");
 
         Experiment exp = new Experiment(id, title, desc);
         FileManager.write("experiments.csv", exp.toString());
 
         saveVersion(id, "system", "title: " + title + "\ndescription: " + desc, "Initial creation");
-        System.out.println("");
-        System.out.println(" Experiment added successfully");
+        System.out.println();
+        System.out.println("  >>> Experiment added successfully! <<<");
+        System.out.println();
     }
 
     public void viewExperiments() {
         List<String> lines = FileManager.readAllLines("experiments.csv");
 
         if (lines.isEmpty()) {
-            System.out.println("No experiments found.");
+            System.out.println("  [!] No experiments found.");
             return;
         }
 
-        System.out.println("=== Experiments ===");
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|               EXPERIMENTS                    |");
+        System.out.println("+----------------------------------------------+");
         for (String line : lines) {
             String[] p = line.split(",", 3);
             if (p.length < 3) continue;
 
-            System.out.println("ID: " + p[0]);
-            System.out.println("Title: " + p[1]);
-            System.out.println("Description: " + p[2]);
-            System.out.println("--------------------");
+            System.out.println("+------------------------------------------+");
+            System.out.println("| ID:          " + p[0]);
+            System.out.println("| Title:       " + p[1]);
+            System.out.println("| Description: " + p[2]);
+            System.out.println("+------------------------------------------+");
         }
     }
 
     public void modifyExperiment(Scanner sc) {
         List<String> lines = FileManager.readAllLines("experiments.csv");
         if (lines.isEmpty()) {
-            System.out.println("No experiments found.");
+            System.out.println("  [!] No experiments found.");
             return;
         }
 
-        System.out.print("Enter Experiment ID to modify: ");
-        String targetId = sc.nextLine().trim();
+        String targetId = InputHelper.readLine("Enter Experiment ID to modify: ");
 
             boolean found = false;
 
@@ -80,17 +81,14 @@ public class ExperimentService {
                     found = true;
 
                     System.out.println("Current Title: " + currentTitle);
-                    System.out.print("New Title (Enter to keep): ");
-                    String newTitle = sc.nextLine();
+                    String newTitle = InputHelper.readLine("New Title (Enter to keep): ");
                     if (newTitle.isBlank()) newTitle = currentTitle;
 
                     System.out.println("Current Description: " + currentDesc);
-                    System.out.print("New Description (Enter to keep): ");
-                    String newDesc = sc.nextLine();
+                    String newDesc = InputHelper.readLine("New Description (Enter to keep): ");
                     if (newDesc.isBlank()) newDesc = currentDesc;
 
-                    System.out.print("Enter change log message: ");
-                    String changeLog = sc.nextLine();
+                    String changeLog = InputHelper.readLine("Enter change log message: ");
                     if (changeLog.isBlank()) changeLog = "Modified experiment";
 
                     Experiment updated = new Experiment(id, newTitle, newDesc);
@@ -102,23 +100,24 @@ public class ExperimentService {
             }
 
             if (!found) {
-                System.out.println(" Experiment not found.");
+                System.out.println("  [ERROR] Experiment not found.");
                 return;
             }
 
             FileManager.overwrite("experiments.csv", lines);
-        System.out.println(" Experiment updated successfully");
+        System.out.println();
+        System.out.println("  >>> Experiment updated successfully! <<<");
+        System.out.println();
     }
 
     public void deleteExperiment(Scanner sc) {
         List<String> lines = FileManager.readAllLines("experiments.csv");
         if (lines.isEmpty()) {
-            System.out.println("No experiments found.");
+            System.out.println("  [!] No experiments found.");
             return;
         }
 
-        System.out.print("Enter Experiment ID to delete: ");
-        String targetId = sc.next();
+        String targetId = InputHelper.readLine("Enter Experiment ID to delete: ");
 
         boolean found = false;
         List<String> kept = new java.util.ArrayList<>();
@@ -134,13 +133,15 @@ public class ExperimentService {
         }
 
         if (!found) {
-            System.out.println("Experiment not found.");
+            System.out.println("  [ERROR] Experiment not found.");
             return;
         }
 
         FileManager.overwrite("experiments.csv", kept);
         deleteVersions(targetId);
-        System.out.println("Experiment deleted successfully.");
+        System.out.println();
+        System.out.println("  >>> Experiment deleted successfully! <<<");
+        System.out.println();
     }
 
     private void saveVersion(String experimentId, String modifiedBy, String snapshot, String changeLog) {
@@ -174,56 +175,54 @@ public class ExperimentService {
     }
 
     public void viewVersionHistory(Scanner sc) {
-        System.out.print("Enter Experiment ID to view history: ");
-        String expId = sc.next();
-        sc.nextLine();
+        String expId = InputHelper.readLine("Enter Experiment ID to view history: ");
 
         List<VersionControl> versions = loadVersions(expId);
         if (versions.isEmpty()) {
-            System.out.println("No versions yet.");
+            System.out.println("  [!] No versions yet.");
             return;
         }
 
-        System.out.println("=== Version History for " + expId + " ===");
+        System.out.println();
+        System.out.println("+----------------------------------------------+");
+        System.out.println("|        VERSION HISTORY: " + expId);
+        System.out.println("+----------------------------------------------+");
         for (VersionControl v : versions) {
-            System.out.println("---");
-            System.out.println("Version: " + v.getVersionID());
-            System.out.println("Modified by: " + v.getModifiedBy());
-            System.out.println("When: " + v.getTimestamp());
-            System.out.println("Change: " + v.getChangeLog());
+            System.out.println("+------------------------------------------+");
+            System.out.println("| Version:     " + v.getVersionID());
+            System.out.println("| Modified By: " + v.getModifiedBy());
+            System.out.println("| Timestamp:   " + v.getTimestamp());
+            System.out.println("| Change:      " + v.getChangeLog());
+            System.out.println("+------------------------------------------+");
         }
     }
 
     public void restoreVersion(Scanner sc) {
-        System.out.print("Enter Experiment ID: ");
-        String expId = sc.next();
-        sc.nextLine();
+        String expId = InputHelper.readLine("Enter Experiment ID: ");
 
         List<VersionControl> versions = loadVersions(expId);
         if (versions.isEmpty()) {
-            System.out.println("No versions found for this experiment.");
+            System.out.println("  [!] No versions found for this experiment.");
             return;
         }
 
-        System.out.println("Available versions:");
+        System.out.println();
+        System.out.println("  ~~~ Available Versions ~~~");
         for (int i = 0; i < versions.size(); i++) {
             VersionControl v = versions.get(i);
-            System.out.println((i + 1) + ". " + v.getVersionID() + " - " + v.getChangeLog() + " (" + v.getTimestamp() + ")");
+            System.out.println("  [" + (i + 1) + "] " + v.getVersionID() + " - " + v.getChangeLog());
         }
 
-        System.out.print("Enter version number to restore: ");
         int versionNum;
         try {
-            versionNum = sc.nextInt();
-            sc.nextLine();
-        } catch (Exception e) {
-            System.out.println("Invalid input.");
-            sc.nextLine();
+            versionNum = Integer.parseInt(InputHelper.readLine("Enter version number to restore: "));
+        } catch (NumberFormatException e) {
+            System.out.println("  [ERROR] Invalid input.");
             return;
         }
 
         if (versionNum < 1 || versionNum > versions.size()) {
-            System.out.println("Invalid version number.");
+            System.out.println("  [ERROR] Invalid version number.");
             return;
         }
 
@@ -256,10 +255,15 @@ public class ExperimentService {
         if (found) {
             FileManager.overwrite("experiments.csv", expLines);
             saveVersion(expId, "user", snapshot, "Restored to version " + selected.getVersionID());
-            System.out.println("Restoring to version: " + selected.getVersionID());
-            System.out.println("Experiment restored successfully.");
+            System.out.println();
+            System.out.println("  *****************************************");
+            System.out.println("  *   Restoring to: " + selected.getVersionID() + "   *");
+            System.out.println("  *****************************************");
+            System.out.println();
+            System.out.println("  >>> Experiment restored successfully! <<<");
+            System.out.println();
         } else {
-            System.out.println("Experiment not found.");
+            System.out.println("  [ERROR] Experiment not found.");
         }
     }
 }
