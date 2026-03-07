@@ -79,7 +79,6 @@ public class BookingService {
         FileManager.overwrite(PENDING_FILE, kept);
         FileManager.write(APPROVED_FILE, approvedLine);
 
-        // Create LabRoom from the approved booking
         Booking approved = Booking.fromString(approvedLine);
         if (approved != null) {
             LabRoom labRoom = new LabRoom(
