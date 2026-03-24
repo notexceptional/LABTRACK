@@ -6,11 +6,26 @@ import labtrack.inventory.ItemService;
 
 import labtrack.util.Colors;
 
+/**
+ * Represents a Technician in the laboratory.
+ * Technicians are responsible for inventory management, stock updates,
+ * and approving borrow requests from researchers.
+ */
 public class Technician extends User {
+    /**
+     * Constructs a new Technician with the specified ID and name.
+     *
+     * @param id The unique identifier for the technician.
+     * @param name The name of the technician.
+     */
     public Technician(String id, String name) {
         super(id, name, "Technician");
     }
 
+    /**
+     * Displays the menu options available to a Technician.
+     * This includes inventory management, stock updates, and borrow request approvals.
+     */
     @Override
     public void showMenu() {
         Colors.header("Technician Dashboard");
