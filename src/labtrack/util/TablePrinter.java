@@ -3,7 +3,19 @@ package labtrack.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility class for rendering data into professional ASCII tables.
+ * Supports dynamic column width calculation and optional title headers.
+ */
 public class TablePrinter {
+    /**
+     * Prints a formatted ASCII table to the console.
+     *
+     * @param title   The title of the table, displayed above the header. Can be null or empty.
+     * @param headers An array of strings representing the column headers. Must not be null or empty.
+     * @param rows    A list of string arrays, where each inner array represents a row of data.
+     *                Each element in the inner array corresponds to a column.
+     */
     public static void printTable(String title, String[] headers, List<String[]> rows) {
         if (headers == null || headers.length == 0) return;
 
@@ -61,6 +73,12 @@ public class TablePrinter {
         System.out.println();
     }
 
+    /**
+     * Prints a CSV file as a formatted ASCII table.
+     * @param title The table title.
+     * @param fileName Path to the CSV file.
+     * @param headers Array of column headers.
+     */
     public static void printCsvAsTable(String title, String fileName, String[] headers) {
         List<String> lines = FileManager.readAllLines(fileName);
         List<String[]> rows = new ArrayList<>();
