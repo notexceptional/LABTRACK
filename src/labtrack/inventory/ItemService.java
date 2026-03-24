@@ -8,12 +8,19 @@ import labtrack.util.InputHelper;
 import labtrack.util.Colors;
 import labtrack.util.TablePrinter;
 
+/**
+ * Service class for handling item-related workflows like borrowing and requesting new stock.
+ * This class manages request queues and approval processes for lab items.
+ */
 public class ItemService {
     private static final String INVENTORY_FILE = "inventory.csv";
     private static final String BORROW_REQUESTS_FILE = "borrow_requests.csv";
     private static final String REQUESTS_FILE = "item_requests.csv";
     private static final String BORROWED_ITEMS_FILE = "borrowed_items.csv";
 
+    /**
+     * Views all items currently available for borrowing in the inventory.
+     */
     public void viewAvailableItems() {
         List<String> lines = FileManager.readAllLines(INVENTORY_FILE);
 
@@ -85,6 +92,7 @@ public class ItemService {
             return;
         }
 
+        // Request formatted as: borrower|item|qty|status|timestamp
         String borrowRequest = borrowerName + "|" + itemName + "|" + borrowQty + "|pending|" + System.currentTimeMillis();
         FileManager.write(BORROW_REQUESTS_FILE, borrowRequest);
         System.out.println();
@@ -130,6 +138,10 @@ public class ItemService {
         return false;
     }
 
+    /**
+     * Technicians use this to approve item borrow requests from researchers.
+     * Decrements inventory and adds to the borrowed_items record.
+     */
     public void approveBorrowRequest(Scanner sc) {
         List<String> lines = FileManager.readAllLines(BORROW_REQUESTS_FILE);
 
