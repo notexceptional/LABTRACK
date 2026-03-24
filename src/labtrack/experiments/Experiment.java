@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import labtrack.version.VersionControl;
 
+/**
+ * Model class representing a laboratory experiment.
+ * Encapsulates experiment details including ID, title, and description.
+ */
 public class Experiment {
     private String experimentId;
     private String title;
