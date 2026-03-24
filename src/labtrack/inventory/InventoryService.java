@@ -8,9 +8,19 @@ import labtrack.util.InputHelper;
 import labtrack.util.Colors;
 import labtrack.util.TablePrinter;
 
+/**
+ * Service class for managing the physical inventory of the laboratory.
+ * This class handles categorization, quantity updates, and stock tracking.
+ */
 public class InventoryService {
     private static final String INVENTORY_FILE = "inventory.csv";
 
+    /**
+     * Adds a new item to the inventory with a specified type (necessary or other).
+     * Prompts the user for item name, quantity, and type, then saves it to the inventory file.
+     *
+     * @param sc The Scanner object for user input.
+     */
     public void addItemWithType(Scanner sc) {
         System.out.println();
         System.out.println(Colors.colorize("  ~~~ Select Item Type ~~~", Colors.CYAN_BOLD));
@@ -45,6 +55,12 @@ public class InventoryService {
         System.out.println();
     }
 
+    /**
+     * Updates the quantity of an existing item in the inventory.
+     * Prompts the user for the item name and the new quantity.
+     *
+     * @param sc The Scanner object for user input.
+     */
     public void updateItemQuantity(Scanner sc) {
         List<String> lines = FileManager.readAllLines(INVENTORY_FILE);
         if (lines.isEmpty()) {
@@ -80,6 +96,12 @@ public class InventoryService {
         System.out.println();
     }
 
+    /**
+     * Marks an item as out of stock by setting its quantity to 0.
+     * Prompts the user for the item name.
+     *
+     * @param sc The Scanner object for user input.
+     */
     public void markItemOut(Scanner sc) {
         List<String> lines = FileManager.readAllLines(INVENTORY_FILE);
         if (lines.isEmpty()) {
@@ -91,7 +113,7 @@ public class InventoryService {
         for (int i = 0; i < lines.size(); i++) {
             InventoryItem item = InventoryItem.fromString(lines.get(i));
             if (item != null && item.getName().equalsIgnoreCase(name)) {
-                item.updateQuantity(0);
+                item.updateQuantity(0); // Set quantity to 0 to mark as out of stock
                 lines.set(i, item.toString());
                 found = true;
                 break;
@@ -107,6 +129,10 @@ public class InventoryService {
         System.out.println();
     }
 
+    /**
+     * Displays a list of all items currently out of stock.
+     * Includes a tag for "necessary" items.
+     */
     public void viewOutOfStockItems() {
         List<String> lines = FileManager.readAllLines(INVENTORY_FILE);
         List<String[]> rows = new ArrayList<>();
@@ -124,6 +150,10 @@ public class InventoryService {
         InputHelper.pressEnterToContinue();
     }
 
+    /**
+     * Displays the full inventory, including item names, quantities, and stock status.
+     * Highlights "necessary" items and "OUT OF STOCK" status with colors.
+     */
     public void viewInventory() {
         List<String> lines = FileManager.readAllLines(INVENTORY_FILE);
         List<String[]> rows = new ArrayList<>();
