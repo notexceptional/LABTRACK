@@ -1,5 +1,10 @@
 package labtrack.util;
 
+/**
+ * Utility class for managing ANSI escape codes for terminal styling.
+ * Provides constants for colors and helper methods for common UI components 
+ * like headers, success/error messages, and colorful text.
+ */
 public class Colors {
     // Reset
     public static final String RESET = "\033[0m";
@@ -47,10 +52,16 @@ public class Colors {
         System.out.println(colorize(text, color));
     }
 
+    /**
+     * Prints a standardized red error message.
+     */
     public static void error(String msg) {
         System.out.println(colorize("  [ERROR] " + msg, RED_BOLD));
     }
 
+    /**
+     * Prints a standardized green success message.
+     */
     public static void success(String msg) {
         System.out.println(colorize("  >>> " + msg + " <<<", GREEN_BOLD));
     }
@@ -59,6 +70,10 @@ public class Colors {
         System.out.println(colorize("  [!] " + msg, YELLOW_BOLD));
     }
 
+    /**
+     * Prints a standardized, centered header for menu panels.
+     * @param title The title to display in the header.
+     */
     public static void header(String title) {
         String separator = "+----------------------------------------------+";
         System.out.println(colorize(separator, CYAN));
