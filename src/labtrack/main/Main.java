@@ -6,6 +6,11 @@ import labtrack.users.User;
 import labtrack.util.Colors;
 import labtrack.util.InputHelper;
 
+/**
+ * Main entry point for the LABTRACK Research Laboratory Management System.
+ * This class handles the primary application loop, user authentication,
+ * and navigation between different user role dashboards.
+ */
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -14,6 +19,7 @@ public class Main {
 
         printWelcomeBanner();
 
+        // Primary application loop: handles login and session management
         while (true) {
             Colors.header("Login");
             User user = authService.login(scanner);
@@ -24,6 +30,7 @@ public class Main {
 
             Colors.success("Welcome, " + user.getUsername() + "!");
 
+            // Session loop: remains active until the user logs out or exits
             boolean loggedIn = true;
             while (loggedIn) {
                 System.out.println();
@@ -44,6 +51,8 @@ public class Main {
                     continue;
                 }
 
+                // Global navigation logic: handles common actions (logout, exit)
+                // and delegates role-specific actions to the User object.
                 switch (choice) {
                     case 0:
                         System.out.println();
