@@ -7,12 +7,26 @@ import labtrack.inventory.ItemService;
 
 import labtrack.util.Colors;
 
+/**
+ * Represents a Researcher in the laboratory.
+ * Researchers can manage experiments, view inventory, borrow items, 
+ * and manage version control for their research data.
+ */
 public class Researcher extends User {
 
+    /**
+     * Constructs a new Researcher with the specified ID and name.
+     *
+     * @param id The unique identifier for the researcher.
+     * @param name The name of the researcher.
+     */
     public Researcher(String id, String name) {
         super(id, name, "Researcher");
     }
 
+    /**
+     * Displays the menu options available to a Researcher.
+     */
     @Override
     public void showMenu() {
         Colors.header("Researcher Dashboard");
