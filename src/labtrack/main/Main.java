@@ -13,9 +13,9 @@ import labtrack.util.InputHelper;
  */
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        InputHelper.setScanner(scanner);
-        AuthService authService = new AuthService();
+        Scanner sc = new Scanner(System.in);
+        InputHelper.setScanner(sc);
+        AuthService auth = new AuthService();
 
         printWelcomeBanner();
 

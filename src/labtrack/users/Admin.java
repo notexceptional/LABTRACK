@@ -85,7 +85,7 @@ public class Admin extends User {
             return;
         }
 
-        FileManager.write(USERS_FILE, id + "," + newUsername + "," + newRole.toLowerCase() + "," + newPassword);
+        FileManager.write(USERS_FILE, id + "," + newUsername + "," + role.toLowerCase() + "," + newPassword);
         System.out.println();
         Colors.success("User created successfully!");
         System.out.println();
